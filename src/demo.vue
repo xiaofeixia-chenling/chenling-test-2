@@ -1,22 +1,35 @@
 <template>
     <!-- <g-cascader :source="source"></g-cascader> -->
     <div>
-        {{selectedList}}
-        <g-table :columns="columns" :data-source="dataSource" :selected-items.sync="selectedList"></g-table>
+        <g-upload accept="imager/*,video/*" action="http://127.0.0.1:3009/upload"
+        name="fileInputName"
+        :fileList.sync='fileList'
+        :parseResponse="parseResponse">
+            <button type="button" name="button">上传</button>
+            <template slot="tips">
+                <div>只能上传 300kb 以内的 png、jpeg 文件</div>
+            </template>
+        </g-upload>
+
+        <!-- {{selectedList}}
+        <g-table :columns="columns" :data-source="dataSource" :selected-items.sync="selectedList"></g-table> -->
     </div>
 </template>
 <script>
 import Cascader from './cascader'
 import GTable from './table'
+import GUpload from './upload'
 import { constants } from 'fs';
 export default{
     name: 'demo',
     components:{
         'g-cascader': Cascader,
-        'g-table': GTable
+        'g-table': GTable,
+        'g-upload': GUpload
     },
     data(){
         return{
+            fileList:[],
             selectedList:[],
             dataSource: [
                 {id: '1',name: '张三', score: 100},
@@ -55,7 +68,11 @@ export default{
             }
     },
     methods:{
-      
+        parseResponse(response){
+            let object = JSON.parse(response)
+            let url = `http://127.0.0.1:3009/preview/${object.id}`
+            return url
+        }
     }
 }
 </script>
